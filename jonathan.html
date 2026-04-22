@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jonathan Klinglmüller</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --card: #1a1a26;
+      --accent: #00e5ff;
+      --accent2: #7c3aed;
+      --text: #e8e8f0;
+      --muted: #6b6b80;
+      --border: rgba(0,229,255,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: .4;
+    }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 0 8vw;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+    }
+    .orb1 { width: 500px; height: 500px; background: rgba(0,229,255,0.07); top: -80px; right: -100px; animation: drift 12s ease-in-out infinite alternate; }
+    .orb2 { width: 400px; height: 400px; background: rgba(124,58,237,0.08); bottom: 0; left: -80px; animation: drift 16s ease-in-out infinite alternate-reverse; }
+
+    @keyframes drift { from { transform: translate(0,0); } to { transform: translate(40px, 30px); } }
+
+    .hero-label {
+      font-size: .75rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+      opacity: 0;
+      animation: fadeUp .6s .2s forwards;
+    }
+
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 12vw, 11rem);
+      line-height: .92;
+      letter-spacing: .02em;
+      color: var(--text);
+      opacity: 0;
+      animation: fadeUp .7s .4s forwards;
+    }
+
+    h1 span {
+      -webkit-text-stroke: 1.5px var(--accent);
+      color: transparent;
+    }
+
+    .hero-sub {
+      margin-top: 2rem;
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 420px;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeUp .7s .65s forwards;
+    }
+
+    .hero-tags {
+      display: flex; gap: .6rem; flex-wrap: wrap;
+      margin-top: 2rem;
+      opacity: 0;
+      animation: fadeUp .7s .85s forwards;
+    }
+
+    .tag {
+      padding: .35rem .9rem;
+      border: 1px solid var(--border);
+      border-radius: 2rem;
+      font-size: .78rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(0,229,255,0.04);
+      transition: background .2s, border-color .2s;
+    }
+    .tag:hover { background: rgba(0,229,255,0.1); border-color: var(--accent); }
+
+    .scroll-hint {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: .4rem;
+      font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; color: var(--muted);
+      opacity: 0; animation: fadeUp .7s 1.2s forwards;
+    }
+    .scroll-hint::after {
+      content: '';
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--muted), transparent);
+      animation: scrollLine 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollLine { 0%,100% { opacity: .3; transform: scaleY(.6); } 50% { opacity: 1; transform: scaleY(1); } }
+
+    /* ── SECTIONS ── */
+    section { padding: 6rem 8vw; position: relative; z-index: 1; }
+
+    .section-label {
+      font-size: .7rem; letter-spacing: .3em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 3rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); max-width: 200px; }
+
+    h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      line-height: 1;
+      margin-bottom: 3rem;
+    }
+
+    /* ── ABOUT ── */
+    #about { background: var(--surface); }
+
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    }
+
+    .about-text p { line-height: 1.9; color: var(--muted); margin-bottom: 1rem; font-size: 1rem; }
+    .about-text p strong { color: var(--text); font-weight: 500; }
+
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: border-color .3s, transform .3s;
+    }
+    .stat-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-desc { font-size: .8rem; color: var(--muted); margin-top: .3rem; letter-spacing: .05em; }
+
+    /* ── HOBBIES ── */
+    #hobbies {}
+
+    .hobby-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+
+    .hobby-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      position: relative; overflow: hidden;
+      transition: transform .35s, border-color .35s;
+      cursor: default;
+    }
+    .hobby-card:hover { transform: translateY(-6px); border-color: var(--accent); }
+    .hobby-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .4s;
+    }
+    .hobby-card:hover::before { transform: scaleX(1); }
+
+    .hobby-icon { font-size: 2.5rem; margin-bottom: 1.2rem; display: block; }
+    .hobby-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem; letter-spacing: .04em;
+      margin-bottom: .7rem;
+    }
+    .hobby-desc { color: var(--muted); font-size: .9rem; line-height: 1.7; }
+
+    .hobby-chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1.2rem; }
+    .chip {
+      font-size: .7rem; padding: .25rem .65rem;
+      background: rgba(0,229,255,0.06); border: 1px solid var(--border);
+      border-radius: 4px; color: var(--accent); letter-spacing: .05em;
+    }
+
+    /* ── LINZ ── */
+    #linz { background: var(--surface); }
+
+    .linz-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: center; }
+
+    .linz-visual {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      height: 320px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .linz-visual svg { width: 100%; height: 100%; opacity: .6; }
+
+    .city-text { font-family: 'Bebas Neue', sans-serif; font-size: 6rem; color: var(--border); position: absolute; bottom: -10px; right: 10px; pointer-events: none; }
+
+    .linz-facts { display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; }
+    .fact {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 1rem 1.2rem;
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      transition: border-color .25s;
+    }
+    .fact:hover { border-color: var(--accent); }
+    .fact-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .fact-body { font-size: .88rem; color: var(--muted); line-height: 1.6; }
+    .fact-body strong { color: var(--text); display: block; margin-bottom: .1rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 3rem 8vw;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem;
+      font-size: .8rem; color: var(--muted);
+    }
+    footer span { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--accent); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity .7s, transform .7s;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 768px) {
+      .about-grid, .linz-grid { grid-template-columns: 1fr; }
+      h1 { font-size: clamp(3.5rem, 16vw, 6rem); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="glow-orb orb1"></div>
+    <div class="glow-orb orb2"></div>
+
+    <p class="hero-label">Persönliche Website</p>
+    <h1>Jonathan<br/><span>Klingl&shy;müller</span></h1>
+    <p class="hero-sub">Gamer. Sportler. Technik-Enthusiast.<br/>Zuhause in Linz, Österreich.</p>
+    <div class="hero-tags">
+      <span class="tag">🎮 Gaming</span>
+      <span class="tag">💪 Sport</span>
+      <span class="tag">⚙️ Technik</span>
+      <span class="tag">📍 Linz</span>
+    </div>
+
+    <div class="scroll-hint">Scroll</div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <p class="section-label reveal">Über mich</p>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <h2>Hey, ich bin<br/>Jonathan.</h2>
+        <p>Ich bin <strong>Jonathan Klinglmüller</strong>, aufgewachsen und lebend in der schönen Stadt <strong>Linz</strong> an der Donau. Technik fasziniert mich seit ich denken kann – ob neue Hardware, Software oder die neuesten Games.</p>
+        <p>Neben dem Bildschirm halte ich mich sportlich fit und bin immer auf der Suche nach neuen Challenges – sowohl digital als auch im echten Leben.</p>
+      </div>
+      <div class="stat-grid reveal">
+        <div class="stat-card">
+          <div class="stat-num">LNZ</div>
+          <div class="stat-desc">Heimatstadt Linz</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">AT</div>
+          <div class="stat-desc">Österreich 🇦🇹</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">2+</div>
+          <div class="stat-desc">Haupt-Hobbys</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">∞</div>
+          <div class="stat-desc">Leidenschaft</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOBBIES -->
+  <section id="hobbies">
+    <p class="section-label reveal">Was ich liebe</p>
+    <h2 class="reveal">Meine Hobbys</h2>
+    <div class="hobby-cards">
+
+      <div class="hobby-card reveal">
+        <span class="hobby-icon">🎮</span>
+        <div class="hobby-title">Gaming & Technik</div>
+        <p class="hobby-desc">Von kompetitiven Multiplayer-Games bis hin zu Story-getriebenen Abenteuern – Gaming ist mehr als Zeitvertreib, es ist eine Leidenschaft. Dazu gehört auch die Faszination für Hardware, Builds und alles rund um Tech.</p>
+        <div class="hobby-chips">
+          <span class="chip">PC Gaming</span>
+          <span class="chip">Hardware</span>
+          <span class="chip">Esports</span>
+          <span class="chip">Tech News</span>
+        </div>
+      </div>
+
+      <div class="hobby-card reveal">
+        <span class="hobby-icon">💪</span>
+        <div class="hobby-title">Sport & Fitness</div>
+        <p class="hobby-desc">Balance ist alles. Sport gibt mir den Ausgleich zum digitalen Leben – Kraft, Ausdauer und Disziplin. Ob im Gym oder draußen, der nächste PR wartet immer.</p>
+        <div class="hobby-chips">
+          <span class="chip">Gym</span>
+          <span class="chip">Kraft</span>
+          <span class="chip">Ausdauer</span>
+          <span class="chip">Outdoor</span>
+        </div>
+      </div>
+
+      <div class="hobby-card reveal">
+        <span class="hobby-icon">🌐</span>
+        <div class="hobby-title">Internet & DIY</div>
+        <p class="hobby-desc">Neues ausprobieren, Dinge selbst bauen und verstehen wie alles zusammenhängt. Von kleinen Projekten bis zu großen Ideen – Neugierde kennt keine Grenzen.</p>
+        <div class="hobby-chips">
+          <span class="chip">Projekte</span>
+          <span class="chip">DIY</span>
+          <span class="chip">Lernen</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- LINZ -->
+  <section id="linz">
+    <p class="section-label reveal">Mein Zuhause</p>
+    <div class="linz-grid">
+      <div class="reveal">
+        <h2>Leben in<br/>Linz.</h2>
+        <p style="color:var(--muted);line-height:1.8;margin-bottom:1.5rem;">Linz – die Hauptstadt Oberösterreichs. Eine Stadt, die Industrie und Kultur, Tradition und Moderne perfekt vereint. Direkt an der Donau gelegen, ist sie für mich mehr als nur Wohnort.</p>
+        <div class="linz-facts">
+          <div class="fact">
+            <span class="fact-icon">🌊</span>
+            <div class="fact-body">
+              <strong>Linz an der Donau</strong>
+              Österreichs drittgrößte Stadt – direkt am Fluss.
+            </div>
+          </div>
+          <div class="fact">
+            <span class="fact-icon">🏭</span>
+            <div class="fact-body">
+              <strong>Technik & Innovation</strong>
+              Bekannt für Industrie, Technik und die Johannes Kepler Universität.
+            </div>
+          </div>
+          <div class="fact">
+            <span class="fact-icon">🎨</span>
+            <div class="fact-body">
+              <strong>Ars Electronica</strong>
+              Weltbekanntes Festival für Kunst, Technologie und Gesellschaft.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="linz-visual reveal">
+        <!-- Minimalist Linz skyline SVG -->
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <!-- Sky gradient -->
+          <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0a0a0f"/>
+              <stop offset="100%" stop-color="#13131a"/>
+            </linearGradient>
+            <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#00e5ff" stop-opacity="0"/>
+              <stop offset="50%" stop-color="#00e5ff" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#00e5ff" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <rect width="400" height="300" fill="url(#sky)"/>
+          <!-- Donau river -->
+          <rect x="0" y="230" width="400" height="30" fill="rgba(0,229,255,0.06)" rx="0"/>
+          <rect x="0" y="235" width="400" height="4" fill="url(#glow)"/>
+          <!-- Buildings -->
+          <rect x="20" y="160" width="35" height="70" fill="#1a1a26" stroke="rgba(0,229,255,0.15)" stroke-width="1"/>
+          <rect x="30" y="155" width="15" height="8" fill="#1a1a26" stroke="rgba(0,229,255,0.15)" stroke-width="1"/>
+          <rect x="65" y="140" width="50" height="90" fill="#1a1a26" stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
+          <rect x="80" y="130" width="20" height="15" fill="#1a1a26" stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
+          <!-- Postlingberg Church simplified -->
+          <polygon points="150,80 165,140 135,140" fill="#13131a" stroke="rgba(0,229,255,0.4)" stroke-width="1.5"/>
+          <rect x="140" y="140" width="30" height="55" fill="#1a1a26" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+          <rect x="146" y="135" width="8" height="10" fill="#1a1a26"/>
+          <!-- More buildings -->
+          <rect x="200" y="150" width="45" height="80" fill="#1a1a26" stroke="rgba(0,229,255,0.15)" stroke-width="1"/>
+          <rect x="255" y="170" width="30" height="60" fill="#1a1a26" stroke="rgba(0,229,255,0.1)" stroke-width="1"/>
+          <rect x="295" y="145" width="55" height="85" fill="#1a1a26" stroke="rgba(0,229,255,0.15)" stroke-width="1"/>
+          <rect x="360" y="165" width="40" height="65" fill="#1a1a26" stroke="rgba(0,229,255,0.1)" stroke-width="1"/>
+          <!-- Windows -->
+          <rect x="70" y="150" width="6" height="6" fill="rgba(0,229,255,0.3)" rx="1"/>
+          <rect x="84" y="150" width="6" height="6" fill="rgba(0,229,255,0.2)" rx="1"/>
+          <rect x="70" y="165" width="6" height="6" fill="rgba(0,229,255,0.15)" rx="1"/>
+          <rect x="205" y="158" width="6" height="6" fill="rgba(0,229,255,0.25)" rx="1"/>
+          <rect x="220" y="158" width="6" height="6" fill="rgba(0,229,255,0.15)" rx="1"/>
+          <rect x="300" y="155" width="6" height="6" fill="rgba(0,229,255,0.3)" rx="1"/>
+          <rect x="315" y="155" width="6" height="6" fill="rgba(0,229,255,0.2)" rx="1"/>
+          <rect x="300" y="170" width="6" height="6" fill="rgba(0,229,255,0.1)" rx="1"/>
+          <!-- Horizon glow -->
+          <ellipse cx="200" cy="230" rx="200" ry="15" fill="rgba(0,229,255,0.04)"/>
+        </svg>
+        <div class="city-text">LINZ</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>Jonathan Klinglmüller</span>
+    <p>📍 Linz, Österreich &nbsp;·&nbsp; Made with ❤️</p>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
